@@ -35,3 +35,5 @@
 ^HTML-jQuery-
 ^Session\.vim$
 \.swp$
+^MYMETA\.yml$
+^MYMETA\.json$

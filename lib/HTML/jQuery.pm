@@ -7,7 +7,7 @@ use Carp;
 
 =head1 NAME
 
-HTML::jQuery - 
+HTML::jQuery - jQuery-like CSS selector based access to an HTML DOM
 
 =head1 VERSION
 
