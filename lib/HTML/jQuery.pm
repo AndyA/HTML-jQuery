@@ -3,7 +3,16 @@ package HTML::jQuery;
 use strict;
 use warnings;
 
+use base qw( Exporter );
+
+our @EXPORT = qw( jq );
+
 use Carp;
+use Data::Dumper;
+use HTML::DOM::Node qw( :all );
+use HTML::DOM;
+use HTML::jQuery::Result;
+use Scalar::Util qw( blessed );
 
 =head1 NAME
 
@@ -25,7 +34,55 @@ our $VERSION = '0.01';
 
 =head1 INTERFACE 
 
+=head2 C<< new >>
+
 =cut
+
+sub new {
+  my ( $cl, $nd ) = @_;
+  return bless { node => $nd }, $cl;
+}
+
+=head2 C<< jq >>
+
+Performa a jQuery style query on a dom node.
+
+=cut
+
+sub _visitor_recursive {
+  my ( $self, $nd, $match ) = @_;
+
+  return unless $nd->nodeType == ELEMENT_NODE;
+
+  my @got = $match->( $nd );
+
+  my $chd = $nd->firstChild;
+  while ( $chd ) {
+    push @got, $self->_visitor_recursive( $chd, $match );
+    $chd = $chd->nextSibling;
+  }
+
+  return @got;
+}
+
+sub _wrap {
+  my ( $self, @nodes ) = @_;
+  return [ map { HTML::jQuery::Result->new( $_ ) } @nodes ];
+}
+
+sub jq {
+  my ( $self, $sel ) = @_;
+  $self = HTML::jQuery->new( $self )
+   unless blessed $self && $self->isa( 'HTML::jQuery' );
+  my $match = sub {
+    my $nd = shift;
+    return ( $nd ) if $nd->tagName eq 'A';
+    return;
+  };
+
+  return $self->_wrap(
+    $self->_visitor_recursive( $self->{node}->firstChild, $match ) );
+}
 
 1;
 __END__
