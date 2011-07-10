@@ -37,3 +37,6 @@
 \.swp$
 ^MYMETA\.yml$
 ^MYMETA\.json$
+
+# Local scratch
+^andy/
